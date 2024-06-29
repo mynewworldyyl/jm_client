@@ -12,7 +12,7 @@
 #     a generated lib/image xxx.a ()
 #
 ifndef PDIR
-GEN_LIBS = libjmicro.a
+GEN_LIBS = libjm_client.a
 endif
 
 
