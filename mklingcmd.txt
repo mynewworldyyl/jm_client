@@ -1,0 +1,1 @@
+mklink /J D:\opensource\schip51\aithinkerSDK\smart_config\app\jmicro jmicro
