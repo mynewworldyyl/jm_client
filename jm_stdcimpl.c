@@ -38,6 +38,15 @@ ICACHE_FLASH_ATTR char jm_getHex(uint8_t hexNum, BOOL low) {
 	}
 }
 
+ICACHE_FLASH_ATTR void jm_toHex(uint8_t* data, char *hex, uint16_t dataLen) {
+	int i= 0;
+	for(; i < dataLen; i++) {
+		hex[i*2] = jm_getHex(data[i], false);
+		hex[i*2+1] = jm_getHex(data[i], true );
+	}
+	hex[i*2] = '\0';
+}
+
 /**
  * 16进制数转换成10进制数
  * 如：0xE4=14*16+4=228

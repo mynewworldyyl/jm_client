@@ -37,6 +37,8 @@ ICACHE_FLASH_ATTR int jm_hexToInt(char *s);
 
 ICACHE_FLASH_ATTR jm_hashmap_t* jm_parseQryParams(char *qryStr);
 
+ICACHE_FLASH_ATTR void jm_toHex(uint8_t* data, char *hex, uint16_t dataLen);
+
 ICACHE_FLASH_ATTR char jm_getHex(uint8_t hexNum, BOOL low);
 //6个字节MAC地址转字符串, toAddr 18个字符长度
 ICACHE_FLASH_ATTR char* jm_toMacAddrStr(uint8_t* addr);

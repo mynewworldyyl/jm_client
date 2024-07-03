@@ -65,55 +65,55 @@
 
 #define  MT_INVALID_LOGIN_INFO 0x004C //76
 
-#define TASK_APP_MAINLOOP (1)
-#define TASK_APP_RX_DATA (2)
-#define TASK_APP_JM_CHECKER (3)
-#define TASK_APP_IR_DATA (4)
-#define TASK_APP_MAIN_CHECK (5)
-#define TASK_APP_OLED_DATA  (6)//更新屏幕温湿度信息
-#define TASK_APP_WIFI_GOT_IP (7)
-#define TASK_APP_WIFI_DISCONN (8) //wifi断开
+#define JM_TASK_APP_MAINLOOP (1)
+#define JM_TASK_APP_RX_DATA (2)
+#define JM_TASK_APP_CHECKER (3)
+#define JM_TASK_APP_IR_DATA (4)
+#define JM_TASK_APP_MAIN_CHECK (5)
+#define JM_TASK_APP_OLED_DATA  (6)//更新屏幕温湿度信息
+#define JM_TASK_APP_WIFI_GOT_IP (7)
+#define JM_TASK_APP_WIFI_DISCONN (8) //wifi断开
 
-#define TASK_APP_DNS_GO_IP (9)
+#define JM_TASK_APP_DNS_GO_IP (9)
 
-#define TASK_APP_RESTART_SYSTEM (10)
+#define JM_TASK_APP_RESTART_SYSTEM (10)
 
-//#define TASK_APP_JM_CHECKER ((os_signal_t)3)
+//#define JM_TASK_APP_JM_CHECKER ((os_signal_t)3)
 
-#define TASK_APP_SAVE_CFG (11)
+#define JM_TASK_APP_SAVE_CFG (11)
 
-#define TASK_APP_GPTCHAT_RECORD_START (12)
-#define TASK_APP_GPTCHAT_RECORD_END (13)
-#define TASK_APP_AUDIO_PLAY (14)
-#define TASK_APP_SCREEN_ONOFF (15)
+#define JM_TASK_APP_GPTCHAT_RECORD_START (12)
+#define JM_TASK_APP_GPTCHAT_RECORD_END (13)
+#define JM_TASK_APP_AUDIO_PLAY (14)
+#define JM_TASK_APP_SCREEN_ONOFF (15)
 
-#define TASK_APP_IR_SEND (16)  //发送红外命令
-#define TASK_APP_IR_RECV (17)  //接收红外命令
-#define TASK_APP_SPEECH_CMD (18)  //语音命令
+#define JM_TASK_APP_IR_SEND (16)  //发送红外命令
+#define JM_TASK_APP_IR_RECV (17)  //接收红外命令
+#define JM_TASK_APP_SPEECH_CMD (18)  //语音命令
 
-#define TASK_APP_DEV_CHANGE (19)  //设备信息更新
+#define JM_TASK_APP_DEV_CHANGE (19)  //设备信息更新
 
-#define TASK_APP_ESP_NOW_REQ (20)  //做ESP—NOW请求
+#define JM_TASK_APP_ESP_NOW_REQ (20)  //做ESP—NOW请求
 
-#define TASK_APP_PS_MSG_REQ (21)  //异步消息请求
-#define TASK_APP_PS_MSG_RESP (22)  //异步消息响应
+#define JM_TASK_APP_PS_MSG_REQ (21)  //异步消息请求
+#define JM_TASK_APP_PS_MSG_RESP (22)  //异步消息响应
 
-#define TASK_APP_LOGIN_RESULT (23)  //账号登录结果
+#define JM_TASK_APP_LOGIN_RESULT (23)  //账号登录结果
 
-#define TASK_APP_TCP (24)  //TCP事件，连接和断开
-#define TASK_APP_UDP (25)  //UDP事件，UDP创建成功
-#define TASK_APP_WIFI (26)//wifi相关命令，具体功能由subType定义
+#define JM_TASK_APP_TCP (24)  //TCP事件，连接和断开
+#define JM_TASK_APP_UDP (25)  //UDP事件，UDP创建成功
+#define JM_TASK_APP_WIFI (26)//wifi相关命令，具体功能由subType定义
 
-#define TASK_APP_ML (27)//ML事件处理
+#define JM_TASK_APP_ML (27)//ML事件处理
 
-#define TASK_APP_KEY (28)//按键事件， subType为GPIO编号， data为按击次数
+#define JM_TASK_APP_KEY (28)//按键事件， subType为GPIO编号， data为按击次数
 
-#define TASK_APP_NETPROXY (29)//
+#define JM_TASK_APP_NETPROXY (29)//
 
-#define TASK_APP_SERIAL (30) //串口命令相关
+#define JM_TASK_APP_SERIAL (30) //串口命令相关
 
-#define TASK_APP_PROXY_TCP (31) //串口命令相关
-#define TASK_APP_PROXY_WRITE_UART (32) //串口命令相关
+#define JM_TASK_APP_PROXY_TCP (31) //串口命令相关
+#define JM_TASK_APP_PROXY_WRITE_UART (32) //串口命令相关
 
 
 /***************************系统事件码结束***********************************/
@@ -125,7 +125,7 @@
 #define JM_EVENT_FLAG_FREE_DATA 0X01 //释放data占用内存
 
 // Task priority for main loop
-#define TASK_APP_QUEUE USER_TASK_PRIO_0
+#define JM_TASK_APP_QUEUE USER_TASK_PRIO_0
 
 typedef enum _jconn_type {
     JCONN_INVALID    = 0,
@@ -211,13 +211,24 @@ typedef enum {
     NetSendTimeOut,//超时
 } net_event_t;
 
+typedef uint8_t (*jm_cli_rpc_callback_fn)(void *resultMap, sint32_t code, char *errMsg, void *arg);
+
+typedef struct _c_msg_result {
+	//BOOL in_used;
+    uint32_t startTime;
+	sint32_t msg_id;
+	//jm_msg_t *msg;
+	jm_cli_rpc_callback_fn callback;
+	void *cbArg;
+	//struct _c_msg_result *next;
+} jm_cli_msg_result_t;
+
 #if JM_RPC_ENABLE==1 && JM_MSG_ENABLE==1
+
 typedef jm_cli_send_msg_result_t (*jm_cli_msg_hander_fn)(jm_msg_t *msg);
 typedef jm_cli_send_msg_result_t (*jm_cli_send_msg_fn)(jm_buf_t *buf);
 //typedef void (*MqttCallback)(uint32_t *args);
 //typedef uint8_t (*jm_cli_on_async_msg_fn)(jm_pubsub_item_t *item);
-
-typedef uint8_t (*jm_cli_rpc_callback_fn)(void *resultMap, sint32_t code, char *errMsg, void *arg);
 
 #endif //JM_RPC_ENABLE
 
@@ -265,6 +276,14 @@ ICACHE_FLASH_ATTR BOOL jm_cli_registTimerChecker(char *key, jm_cli_timer_check_f
 ICACHE_FLASH_ATTR uint32_t jm_cli_getSysStartTime();
 
 ICACHE_FLASH_ATTR uint32_t jm_cli_getSysRunTime();
+
+ICACHE_FLASH_ATTR char* jm_cli_getLoginKey();
+
+ICACHE_FLASH_ATTR void jm_cli_setLoginKey(char* loginKey);
+
+ICACHE_FLASH_ATTR int32_t  jm_cli_clientId();
+
+ICACHE_FLASH_ATTR int8_t  jm_cli_grpId();
 
 #if JM_STD_TIME_ENABLE==1
 //取得系统启动时的标准时间 单位秒
@@ -327,6 +346,7 @@ ICACHE_FLASH_ATTR BOOL jm_cli_registMessageHandler(jm_cli_msg_hander_fn msg, sin
 ICACHE_FLASH_ATTR sint64_t jm_cli_invokeRpc(sint32_t mcode, jm_elist_t *params,
 		jm_cli_rpc_callback_fn callback, void *cbArgs);
 
+#if JM_LOGIN_ENABLE==1
 /**
  */
 ICACHE_FLASH_ATTR jm_cli_send_msg_result_t jm_cli_login();
@@ -335,6 +355,7 @@ ICACHE_FLASH_ATTR jm_cli_send_msg_result_t jm_cli_login();
  */
 ICACHE_FLASH_ATTR jm_cli_send_msg_result_t jm_cli_logout();
 
+#endif
 
 #endif //#if JM_RPC_ENABLE==1
 

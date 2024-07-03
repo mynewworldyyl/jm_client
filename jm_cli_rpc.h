@@ -3,6 +3,36 @@ ICACHE_FLASH_ATTR BOOL jm_cli_isLogin(){
 	return loginCode == LSUCCESS;
 }
 
+ICACHE_FLASH_ATTR void jm_cli_setLoginKey(char* lk){
+	if(loginKey) {
+		jm_utils_releaseStr(loginKey,0);
+	}
+	
+	loginCode = 0;
+	loginKey = NULL;
+	
+	if(lk == NULL) {
+		return;
+	}
+	loginKey = jm_utils_copyStr(lk);
+	loginCode = LSUCCESS;
+}
+
+ICACHE_FLASH_ATTR char* jm_cli_getLoginKey(){
+	//ESP_LOGI(TAG,"stdTime=%u,client_getSysRunTime=%d",stdTime, client_getSysRunTime());
+	return loginKey;
+}
+
+ICACHE_FLASH_ATTR int32_t jm_cli_clientId(){
+	//ESP_LOGI(TAG,"stdTime=%u,client_getSysRunTime=%d",stdTime, client_getSysRunTime());
+	return clientId;
+}
+
+ICACHE_FLASH_ATTR int8_t jm_cli_grpId(){
+	//ESP_LOGI(TAG,"stdTime=%u,client_getSysRunTime=%d",stdTime, client_getSysRunTime());
+	return grpId;
+}
+
 static ICACHE_FLASH_ATTR void _c_setMsgUdp(jm_msg_t *msg){
 #if JM_TCP==1
 	jm_msg_setUdp(msg,false);
@@ -77,6 +107,8 @@ ICACHE_FLASH_ATTR static BOOL _c_checkRpcTimeout(){
     return true;
 }
 
+#if JM_LOGIN_ENABLE==1
+
 ICACHE_FLASH_ATTR static  uint8_t _c_loginResult(jm_emap_t *resultMap, sint32_t code, char *errMsg, void *arg){
 
 	/*if(loginMsg) {
@@ -123,7 +155,7 @@ ICACHE_FLASH_ATTR static  uint8_t _c_loginResult(jm_emap_t *resultMap, sint32_t 
 		if(aid) sysCfg.actId = aid;
 		sysCfg.clientId = cid;
 		sysCfg.grpId = gid;
-		jm_cli_getJmm()->jm_postEvent(TASK_APP_SAVE_CFG,0,NULL,0);//subType=0不重启
+		jm_cli_getJmm()->jm_postEvent(JM_TASK_APP_SAVE_CFG,0,NULL,0);//subType=0不重启
 	}
 
 	JM_CLI_DEBUG("cli c=%ld, msg=%s, lk=%s\n", loginCode, errMsg, loginKey);
@@ -131,7 +163,7 @@ ICACHE_FLASH_ATTR static  uint8_t _c_loginResult(jm_emap_t *resultMap, sint32_t 
 
 finish:
 
-	jm_cli_getJmm()->jm_postEvent(TASK_APP_LOGIN_RESULT,loginCode, NULL, 0);
+	jm_cli_getJmm()->jm_postEvent(JM_TASK_APP_LOGIN_RESULT,loginCode, NULL, 0);
 
 	/*if(jm_cli_isLogin()) {
 		_c_subTopicAfterjmLogin();
@@ -139,6 +171,7 @@ finish:
 
 	return JM_SUCCESS;
 }
+
 
 ICACHE_FLASH_ATTR jm_cli_send_msg_result_t jm_cli_login(){
 
@@ -211,6 +244,8 @@ ICACHE_FLASH_ATTR jm_cli_send_msg_result_t jm_cli_logout(){
 	lastLoginTime = 0;
 	return JM_SUCCESS;
 }
+
+#endif
 
 
 ICACHE_FLASH_ATTR jm_cli_send_msg_result_t jm_cli_sendMessage(jm_msg_t *msg){
@@ -527,12 +562,14 @@ ICACHE_FLASH_ATTR static  jm_cli_send_msg_result_t _c_rpcMsgHandle(jm_msg_t *msg
 		JM_CLI_ERROR("rpc c:%d, err: %s\n", code, p);
 	}
 
+#if JM_LOGIN_ENABLE==1
     if(code == MT_INVALID_LOGIN_INFO) {
         JM_CLI_DEBUG("rpc in lk\n");
         jm_cli_logout();
         jm_cli_login();
     }
-
+#endif //JM_LOGIN_ENABLE==1
+	
 	wait->callback(rst, code, p, wait->cbArg);
 
 	if(rst!= NULL && jm_msg_getDownProtocol(msg) == PROTOCOL_EXTRA) {

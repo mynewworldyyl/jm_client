@@ -13,9 +13,24 @@
 #define JM_NETPROXY 1
 #endif
 
+#ifndef JM_LOGIN_ENABLE
+#define JM_LOGIN_ENABLE 1
+#endif
+
+#ifndef JM_HB_ENABLE
+#define JM_HB_ENABLE 1
+#endif
+
 #ifndef JM_ENV
 #define JM_ENV 0
 #endif
+
+
+
+
+
+
+
 
 #ifndef SLOG_ENABLE
 #define SLOG_ENABLE 1
@@ -77,59 +92,59 @@
 #define JM_MSG_ENABLE 1
 #endif
 
-#ifndef CLI_DEBUG_ENABLE
-#define CLI_DEBUG_ENABLE 0
+#ifndef JM_CLI_DEBUG_ENABLE
+#define JM_CLI_DEBUG_ENABLE 0
 #endif
 
-#ifndef CLI_ERROR_ENABLE
-#define CLI_ERROR_ENABLE 0
+#ifndef JM_CLI_ERROR_ENABLE
+#define JM_CLI_ERROR_ENABLE 0
 #endif
 
-#ifndef BUF_DEBUG_ENABLE
-#define BUF_DEBUG_ENABLE 0
+#ifndef JM_BUF_DEBUG_ENABLE
+#define JM_BUF_DEBUG_ENABLE 0
 #endif
 
-#ifndef BUF_ERROR_ENABLE
-#define BUF_ERROR_ENABLE 0
+#ifndef JM_BUF_ERROR_ENABLE
+#define JM_BUF_ERROR_ENABLE 0
 #endif
 
-#ifndef MSG_DEBUG_ENABLE
-#define MSG_DEBUG_ENABLE 0
+#ifndef JM_MSG_DEBUG_ENABLE
+#define JM_MSG_DEBUG_ENABLE 0
 #endif
 
-#ifndef MSG_ERROR_ENABLE
-#define MSG_ERROR_ENABLE 0
+#ifndef JM_MSG_ERROR_ENABLE
+#define JM_MSG_ERROR_ENABLE 0
 #endif
 
-#ifndef MEM_DEBUG_ENABLE
-#define MEM_DEBUG_ENABLE 0
+#ifndef JM_MEM_DEBUG_ENABLE
+#define JM_MEM_DEBUG_ENABLE 0
 #endif
 
-#ifndef MEM_ERROR_ENABLE
-#define MEM_ERROR_ENABLE 0
+#ifndef JM_MEM_ERROR_ENABLE
+#define JM_MEM_ERROR_ENABLE 0
 #endif
 
-#ifndef STD_DEBUG_ENABLE
-#define STD_DEBUG_ENABLE 0
+#ifndef JM_STD_DEBUG_ENABLE
+#define JM_STD_DEBUG_ENABLE 0
 #endif
 
-#ifndef STD_ERROR_ENABLE
-#define STD_ERROR_ENABLE 0
+#ifndef JM_STD_ERROR_ENABLE
+#define JM_STD_ERROR_ENABLE 0
 #endif
 
-#if CLI_ERROR_ENABLE==1
+#if JM_CLI_ERROR_ENABLE==1
 #define JM_CLI_ERROR(format, ...) SINFO(format,## __VA_ARGS__)
 #else
 #define JM_CLI_ERROR(format, ...)
 #endif
 
-#if CLI_DEBUG_ENABLE==1
+#if JM_CLI_DEBUG_ENABLE==1
 #define JM_CLI_DEBUG(format, ...) SINFO(format,## __VA_ARGS__)
 #else
 #define JM_CLI_DEBUG(format, ...)
 #endif
 
-#if  STD_ERROR_ENABLE==1
+#if  JM_STD_ERROR_ENABLE==1
 #define JM_STD_ERROR(format, ...) SINFO(format,## __VA_ARGS__)
 #else
 #define JM_STD_ERROR(format, ...)
@@ -137,49 +152,49 @@
 
 
 
-#if BUF_DEBUG_ENABLE==1
+#if JM_BUF_DEBUG_ENABLE==1
 #define JM_BUF_DEBUG(format, ...) SINFO(format,## __VA_ARGS__)
 #else
 #define JM_BUF_DEBUG(format, ...)
 #endif
 
-#if BUF_ERROR_ENABLE==1
+#if JM_BUF_ERROR_ENABLE==1
 #define JM_BUF_ERROR(format, ...) SINFO(format,## __VA_ARGS__)
 #else
 #define JM_BUF_ERROR(format, ...)
 #endif
 
-#if MSG_DEBUG_ENABLE==1
+#if JM_MSG_DEBUG_ENABLE==1
 #define JM_MSG_DEBUG(format, ...) SINFO(format,## __VA_ARGS__)
 #else
 #define JM_MSG_DEBUG(format, ...)
 #endif
 
-#if MSG_ERROR_ENABLE==1
+#if JM_MSG_ERROR_ENABLE==1
 #define JM_MSG_ERROR(format, ...) SINFO(format,## __VA_ARGS__)
 #else
 #define JM_MSG_ERROR(format, ...)
 #endif
 
-#if MEM_DEBUG_ENABLE==1
+#if JM_MEM_DEBUG_ENABLE==1
 #define JM_MEM_DEBUG(format, ...) SINFO(format,## __VA_ARGS__)
 #else
 #define JM_MEM_DEBUG(format, ...)
 #endif
 
-#if MEM_ERROR_ENABLE==1
+#if JM_MEM_ERROR_ENABLE==1
 #define JM_MEM_ERROR(format, ...) SINFO(format,## __VA_ARGS__)
 #else
 #define JM_MEM_ERROR(format, ...)
 #endif
 
-#if STD_DEBUG_ENABLE==1
+#if JM_STD_DEBUG_ENABLE==1
 #define JM_STD_DEBUG(format, ...) SINFO(format,## __VA_ARGS__)
 #else
 #define JM_STD_DEBUG(format, ...)
 #endif
 
-#if STD_ERROR_ENABLE==1
+#if JM_STD_ERROR_ENABLE==1
 #define JM_STD_ERROR(format, ...) SINFO(format,## __VA_ARGS__)
 #else
 #define JM_STD_ERROR(format, ...)

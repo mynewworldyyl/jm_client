@@ -25,41 +25,48 @@
 #ifndef _C_TYPES_H_
 #define _C_TYPES_H_
 
-typedef unsigned char       uint8_t;
-typedef signed char         sint8_t;
-typedef signed char         int8_t;
-typedef unsigned short      uint16_t;
-typedef signed short        sint16_t;
-typedef signed short        int16_t;
-typedef unsigned int        uint32_t;
-typedef signed long         sint32_t;
-typedef signed int          int32_t;
-typedef signed long long    sint64_t;
-typedef unsigned long long  uint64_t;
-typedef unsigned long long  u_int64_t;
-typedef float               real32_t;
-typedef double              real64_t;
+#include "stdint.h"
 
-typedef unsigned char       uint8;
-typedef unsigned char       u8;
+typedef signed char         sint8_t;
+
 typedef signed char         sint8;
-typedef signed char         int8;
 typedef signed char         s8;
-typedef unsigned short      uint16;
-typedef unsigned short      u16;
 typedef signed short        sint16;
 typedef signed short        s16;
+typedef signed int          sint32;
+typedef signed long long    sint64;
+typedef unsigned char       uint8;
+typedef unsigned char       u8;
+typedef unsigned short      uint16;
+typedef unsigned short      u16;
 typedef unsigned int        uint32;
 typedef unsigned int        u_int;
 typedef unsigned int        u32;
-typedef signed int          sint32;
-typedef signed int          s32;
-typedef int                 int32;
-typedef signed long long    sint64;
 typedef unsigned long long  uint64;
 typedef unsigned long long  u64;
+typedef unsigned long long  u_int64_t;
+typedef signed short        sint16_t;
+typedef signed long long    sint64_t;
+typedef signed long         sint32_t;
+
+#ifndef __stdint_h
+
+typedef signed int          s32;
+typedef unsigned char       uint8_t;
+typedef signed char         int8_t;
+typedef unsigned short      uint16_t;
+typedef signed short        int16_t;
+typedef unsigned int        uint32_t;
+typedef signed int          int32_t;
+typedef unsigned long long  uint64_t;
+typedef float               real32_t;
+typedef double              real64_t;
+typedef signed char         int8;
+typedef int                 int32;
 typedef float               real32;
 typedef double              real64;
+
+#endif // __stdint_h
 
 #ifndef int64_t
 #define int64_t sint64_t
@@ -77,11 +84,15 @@ typedef double              real64;
 #define int8_t sint8_t
 #endif
 
+
+
 #define __le16      u16
 #ifndef size_t
 //typedef unsigned int        size_t;
 #endif
 #define __packed        __attribute__((packed))
+
+
 
 #define LOCAL       static
 

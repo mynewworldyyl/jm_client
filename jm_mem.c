@@ -340,7 +340,7 @@ ICACHE_FLASH_ATTR void jm_mem_init() {
     }
 #endif
 
-#if JM_STM32==1 && JM_PS_ENABLE==1
+#if JM_STM32!=1 && JM_PS_ENABLE==1
     cmd_registFun("printMemDataa",_printMemData);
 #endif
 	

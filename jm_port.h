@@ -6,16 +6,16 @@
 #include "debug.h"
 #include "jm_buffer.h"
 
-#define MAIN_DEBUG_ENABLE 0
-#define  MAIN_ERROR_ENABLE 1
+#define JM_MAIN_DEBUG_ENABLE 0
+#define  JM_MAIN_ERROR_ENABLE 1
 
-#if MAIN_DEBUG_ENABLE==1
+#if JM_MAIN_DEBUG_ENABLE==1
 #define JM_MAIN_DEBUG(format, ...) SINFO(format,## __VA_ARGS__)
 #else
 #define JM_MAIN_DEBUG(format, ...)
 #endif
 
-#if  MAIN_ERROR_ENABLE==1
+#if  JM_MAIN_ERROR_ENABLE==1
 #define JM_MAIN_ERROR(format, ...) SINFO(format,## __VA_ARGS__)
 #else
 #define JM_MAIN_ERROR(format, ...)

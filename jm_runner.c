@@ -28,7 +28,7 @@ static ICACHE_FLASH_ATTR uint32_t _jm_getTime() {
 ICACHE_FLASH_ATTR void jm_ElseMs(uint32_t mseq) {
 	msEque += mseq;//毫秒
 	if(msEque % 1000 == 0) {
-		jm_cli_getJmm()->jm_postEvent(TASK_APP_JM_CHECKER, 0, NULL, JM_EVENT_FLAG_DEFAULT);
+		jm_cli_getJmm()->jm_postEvent(JM_TASK_APP_CHECKER, 0, NULL, JM_EVENT_FLAG_DEFAULT);
 	}
 }
 
@@ -44,7 +44,7 @@ static void user_postEvent(uint8_t evt, uint16_t subType, void *data, uint8_t fl
 		return;
 	}
 	
-	if(evt != 3 && TASK_APP_RX_DATA != evt) {
+	if(evt != 3 && JM_TASK_APP_RX_DATA != evt) {
 		JM_MAIN_DEBUG("user_postEvent B evt=%u st=%u t=%d h=%d\n", evt,  subType, taskTailIdx, taskHeaderIdx);
 	}
 
@@ -62,7 +62,7 @@ static void user_postEvent(uint8_t evt, uint16_t subType, void *data, uint8_t fl
 		taskEmpty = false;
 	}
 	
-	if(evt != 3 && TASK_APP_RX_DATA != evt) {
+	if(evt != 3 && JM_TASK_APP_RX_DATA != evt) {
 		JM_MAIN_DEBUG("user_postEvent E evt=%u st=%u t=%d h=%d\n",evt, subType, taskTailIdx, taskHeaderIdx);
 	}
 	
@@ -180,11 +180,11 @@ ICACHE_FLASH_ATTR static void _eventHandler(jm_event_t *jevent) {
 	}
 
   switch (jevent->type) {
-	  case TASK_APP_MAINLOOP:
+	  case JM_TASK_APP_MAINLOOP:
 		//mainLoop();
 		break;
 
-	  case TASK_APP_WIFI_GOT_IP:
+	  case JM_TASK_APP_WIFI_GOT_IP:
 	  {
 		  /*
 		  #if JM_ENV==1
@@ -199,18 +199,18 @@ ICACHE_FLASH_ATTR static void _eventHandler(jm_event_t *jevent) {
 	  }
      break;
 
-	case TASK_APP_DNS_GO_IP:
+	case JM_TASK_APP_DNS_GO_IP:
 	  //_doChecker();
 	  //jm_udpserver_check();
       break;
 
-	case TASK_APP_WIFI:
+	case JM_TASK_APP_WIFI:
 		JM_MAIN_DEBUG("Invoke wifi_init B\n");
 		//wifi_init();
 		//JM_MAIN_DEBUG("Invoke wifi_init E\n");
 		break;
 
-  case TASK_APP_JM_CHECKER:
+  case JM_TASK_APP_CHECKER:
 	  //JM_MAIN_DEBUG("TASK_APP_JM_CHECKER B\n");
 	  //os_timer_disarm(&worker);//先停掉定时器，防止重入
 	  // start_timer_wrapper(0);
@@ -227,26 +227,26 @@ ICACHE_FLASH_ATTR static void _eventHandler(jm_event_t *jevent) {
       break;
 
 #if NET_PROXY
-  case TASK_APP_NETPROXY:
+  case JM_TASK_APP_NETPROXY:
 	  JM_MAIN_DEBUG("n proxy\n");
 	  jm_netproxy_recvTxData();
     break;
 #endif
 
 #if JM_IR >-1
-  case TASK_APP_IR_DATA:
+  case JM_TASK_APP_IR_DATA:
  	  JM_MAIN_DEBUG("_eventHandler forwar ir msg\n");
  	 // _ir_onData();
      break;
 #endif
 
-  case TASK_APP_RESTART_SYSTEM:
+  case JM_TASK_APP_RESTART_SYSTEM:
 	  //经过jevent->subType秒后，重启系统
 	  //ml_broadcastShutdownMsg();
 	  //jm_cli_registTimerChecker("_rssys", user_restartSystem, 1, jevent->subType, false);
 	  break;
 
-  case TASK_APP_SAVE_CFG:
+  case JM_TASK_APP_SAVE_CFG:
 	//cfg_save();
 	if(jevent->subType == 1) {
 		jm_cli_getJmm()->jm_delay(100);
@@ -255,9 +255,9 @@ ICACHE_FLASH_ATTR static void _eventHandler(jm_event_t *jevent) {
 	}
 	break;
 
-  case TASK_APP_UDP:
+  case JM_TASK_APP_UDP:
 	//通知ML模块UDP可用，优先发送上线广播
-	//jm_cli_getJmm()->jm_postEvent(TASK_APP_ML, JM_ML_EVENT_SUBTYPE_UPDCONNECTED, NULL, JM_EVENT_FLAG_DEFAULT);
+	//jm_cli_getJmm()->jm_postEvent(JM_TASK_APP_ML, JM_ML_EVENT_SUBTYPE_UPDCONNECTED, NULL, JM_EVENT_FLAG_DEFAULT);
   	break;
 
   //Handle the unknown event type.

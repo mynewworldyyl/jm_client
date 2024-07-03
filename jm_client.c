@@ -33,18 +33,6 @@ typedef struct jm_msg_handler_register_item{
 	struct jm_msg_handler_register_item *next;
 } CHRI;
 
-typedef struct _c_msg_result {
-	//BOOL in_used;
-    uint32_t startTime;
-	sint32_t msg_id;
-	//jm_msg_t *msg;
-	jm_cli_rpc_callback_fn callback;
-	void *cbArg;
-	//struct _c_msg_result *next;
-} jm_cli_msg_result_t;
-
-
-
 ICACHE_FLASH_ATTR static BOOL _c_checkRpcTimeout();
 ICACHE_FLASH_ATTR static  CHRI* _c_GetMsgHandler(sint8_t type);
 ICACHE_FLASH_ATTR static  jm_cli_send_msg_result_t _c_rpcMsgHandle(jm_msg_t *msg);
@@ -269,8 +257,8 @@ ICACHE_FLASH_ATTR static void _c_netListener_syncStdTime(jconn_type connType, ne
 	}
 }
 
-ICACHE_FLASH_ATTR static void _ctrl_syncStdTime_checker(){
-	if(stdTime > 0 || !jm_cli_wifiEnable()) return;
+ICACHE_FLASH_ATTR static uint8_t _ctrl_syncStdTime_checker(){
+	if(stdTime > 0 || !jm_cli_wifiEnable()) return 0;
 
 	if(jm_cli_tcpEnable()){
 		_c_netListener_syncStdTime(JCONN_TCP, NetConnected);
@@ -279,6 +267,7 @@ ICACHE_FLASH_ATTR static void _ctrl_syncStdTime_checker(){
 	}
 
 	jm_cli_unregistTimerChecker("_syncStdT");
+	return 0;
 }
 
 #endif //JM_STD_TIME_ENABLE
@@ -376,7 +365,6 @@ ICACHE_FLASH_ATTR BOOL jm_cli_distroy() {
 	return true;
 }
 
-
 //设备是否已经被绑定
 ICACHE_FLASH_ATTR uint8_t jm_cli_isBind(){
     return /*sysCfg.actId >0 &&*/ jm_strlen((char*)sysCfg.deviceId) > 0 && jm_strlen((char*)sysCfg.invokeCode) > 0;
@@ -455,9 +443,9 @@ ICACHE_FLASH_ATTR void _client_socketConedCb(jm_event_t *event){
 	sint8_t connType = event->subType;
 	JM_CLI_DEBUG("jm_cli_socketConedCb B connType=%d\n",connType);
 
-	if(event->type == TASK_APP_UDP) {
+	if(event->type == JM_TASK_APP_UDP) {
 		udpConnected = connType;
-	}else if(event->type == TASK_APP_TCP) {
+	}else if(event->type == JM_TASK_APP_TCP) {
 		tcpConnected = NetConnected;
 	}else {
 		JM_CLI_ERROR("cli invalid conn\n");
@@ -467,7 +455,7 @@ ICACHE_FLASH_ATTR void _client_socketConedCb(jm_event_t *event){
 	} else if(connType == JCONN_UDP) {
 		udpConnected = NetConnected;
 	}*/
-#if JM_RPC_ENABLE==1
+#if JM_RPC_ENABLE==1 && JM_LOGIN_ENABLE==1
 	if(jm_cli_tcpEnable() ){
 		if(!jm_cli_isLogin()) {
 			JM_CLI_DEBUG("cli tlogin\n");
@@ -492,9 +480,9 @@ ICACHE_FLASH_ATTR BOOL jm_cli_socketSendTimeoutCb(jconn_type connType){
 //Wifi连接上后，开始下载需要缓存的语音信息
 #ifndef JM_STM32
 static void _jm_c_wifi_conn_event_listener(jm_event_t* event){ // The tts stream comes to an end
-    if(event->type == TASK_APP_WIFI_GOT_IP) {
+    if(event->type == JM_TASK_APP_WIFI_GOT_IP) {
 		wifiEn = true;
-	}else if(event->type == TASK_APP_WIFI_DISCONN) {
+	}else if(event->type == JM_TASK_APP_WIFI_DISCONN) {
 		wifiEn = false;
 	}
 }
@@ -524,7 +512,7 @@ ICACHE_FLASH_ATTR BOOL jm_cli_init() {
 	
 	jm_cli_registMessageHandler(_c_rpcMsgHandle, MSG_TYPE_RRESP_JRPC);
 	
-	jm_cli_registTimerChecker("_c_RPCC",_c_checkRpcTimeout,3,5,false);
+	jm_cli_registTimerChecker("_c_RPCC", _c_checkRpcTimeout, 3, 5, false);
 	
 #endif //JM_RPC_ENABLE
 
@@ -534,7 +522,7 @@ ICACHE_FLASH_ATTR BOOL jm_cli_init() {
 	jm_cli_registMessageHandler(_c_pubsubOpMsgHandle, MSG_TYPE_PUBSUB_RESP);
 	//jm_cli_subscribeByType(test_onPubsubItemType1Listener,-128,false);
 
-	jmm.jm_regEventListener(TASK_APP_LOGIN_RESULT, _c_subTopicAfterjmLogin);
+	jmm.jm_regEventListener(JM_TASK_APP_LOGIN_RESULT, _c_subTopicAfterjmLogin);
 	//#endif
 #endif
 
@@ -557,17 +545,17 @@ ICACHE_FLASH_ATTR BOOL jm_cli_init() {
    	jm_cli_registTimerChecker("_syncStdT",_ctrl_syncStdTime_checker,5,1,false);
 #endif
 
-#if JM_HB_ENABLE==1 && JM_RPC_ENABLE==1
+#if JM_HB_ENABLE==1 && JM_RPC_ENABLE==1 && JM_LOGIN_ENABLE==1
    	jm_cli_registTimerChecker("_chb",_c_sendHearbeet,60,60,false);//一分钟一次心跳
 #endif //JM_HB_ENABLE
 
-   	jmm.jm_regEventListener(TASK_APP_UDP, _client_socketConedCb);
+   	jmm.jm_regEventListener(JM_TASK_APP_UDP, _client_socketConedCb);
 
 #ifndef JM_STM32
    	if(jmm.jm_regEventListener) {		
 		JM_CLI_DEBUG("cli_init 1 %u\n", jm_cli_getJmm()->jm_regEventListener);
-		jmm.jm_regEventListener(TASK_APP_WIFI_GOT_IP, _jm_c_wifi_conn_event_listener);
-		jmm.jm_regEventListener(TASK_APP_WIFI_DISCONN, _jm_c_wifi_conn_event_listener);
+		jmm.jm_regEventListener(JM_TASK_APP_WIFI_GOT_IP, _jm_c_wifi_conn_event_listener);
+		jmm.jm_regEventListener(JM_TASK_APP_WIFI_DISCONN, _jm_c_wifi_conn_event_listener);
    	}
 #endif
 
